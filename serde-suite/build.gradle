@@ -1,0 +1,83 @@
+import com.commercehub.gradle.plugin.avro.GenerateAvroSchemaTask
+
+plugins {
+    id 'application'
+}
+
+dependencies {
+
+    implementation "commons-jxpath:commons-jxpath:1.3"
+
+    implementation "org.apache.logging.log4j:log4j-api:$log4jVersion"
+    implementation "org.apache.logging.log4j:log4j-core:$log4jVersion"
+    implementation "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
+    // This is to allow AWS SDK do logging
+    implementation "info.picocli:picocli:$picoCliVersion"
+    implementation "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
+
+    implementation "org.apache.kafka:kafka-clients:$kafkaVersion"
+    constraints {
+        implementation "org.apache.avro:avro:$avroVersion"
+    }
+    implementation "com.google.code.gson:gson:2.8.5"
+    implementation "io.confluent:kafka-avro-serializer:$confluentVersion"
+    implementation "com.amazonaws:aws-java-sdk-dynamodb:$dynamoDBClientLegacyVersion"
+    implementation "org.xerial.snappy:snappy-java:$snappyVersion"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
+    testImplementation "org.mockito:mockito-junit-jupiter:$mockitoVersion"
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+}
+
+application {
+    mainClassName = 'com.avro.utils'
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        exceptionFormat "full"
+        showExceptions = true
+        showStackTraces = true
+        showStandardStreams = true
+    }
+}
+
+
+dependencies {
+    implementation "org.apache.avro:avro:$avroVersion"
+    compileOnly "joda-time:joda-time:$jodaTimeVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+}
+
+task("generateSchema", type: GenerateAvroSchemaTask) {
+    source file(project.name + "src/main/avro")
+    source file(project.name + "build/generated-main-avro-avpr")
+    include("**/*.avpr")
+    outputDir = file(project.name + "build/generated-main-avro-avsc")
+}
+
+schemaRegistry {
+    url = "${SCHEMA_REGISTRY_URL}"
+    credentials {
+        username = "${SCHEMA_REGISTRY_ACCESS_KEY}"
+        password = "${SCHEMA_REGISTRY_SECRET}"
+    }
+    config {
+        subject('icon_object_model_avro-value', 'BACKWARD_TRANSITIVE')
+        subject('user_data_bck_producer-value', 'BACKWARD_TRANSITIVE')
+        subject('user_data_bck_consumer-value', 'BACKWARD_TRANSITIVE')
+        subject('user_data_fwd_producer-value', 'FORWARD_TRANSITIVE')
+
+    }
+    compatibility {
+        subject('icon_object_model_avro-value', project.name + '/src/main/avro/icon_object_model_avro-value.avsc')
+    }
+    register {
+        subject('icon_object_model_avro-value', project.name + '/src/main/avro/icon_object_model_avro-value.avsc')
+        subject('user_data_bck_consumer-value', project.name + '/src/main/avro/user-schema-consumer-2.0.avsc')
+        subject('user_data_bck_producer-value', project.name + '/src/main/avro/user-schema-producer-1.0.avsc')
+        subject('user_data_fwd_producer-value', project.name + '/src/main/avro/user-schema-FWD-producer-1.0.avsc')
+    }
+}

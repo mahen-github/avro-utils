@@ -1,0 +1,19 @@
+{
+  "namespace": "com.avro.producer",
+  "type": "record",
+  "name": "TestUser",
+  "fields": [
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "age",
+      "type": "int"
+    },
+    {
+      "name": "favorite_color",
+      "type": "string"
+    }
+  ]
+}

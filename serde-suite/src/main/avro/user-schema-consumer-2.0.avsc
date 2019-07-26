@@ -1,0 +1,23 @@
+{
+  "namespace": "com.avro.consumer",
+  "type": "record",
+  "name": "TestUser",
+  "fields": [
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "age",
+      "type": "int"
+    },
+    {
+      "name": "gender",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null
+    }
+  ]
+}

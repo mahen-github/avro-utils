@@ -1,0 +1,3 @@
+rootProject.name = 'avro-utils'
+include 'serde-suite'
+

@@ -1,0 +1,6 @@
+<FindBugsFilter>
+  <!-- Sometimes we have to temporarily fix very long, different formatted Calcite files. -->
+  <Match>
+    <Package name="com.nordstrom.cis.models"/>
+  </Match>
+</FindBugsFilter>
